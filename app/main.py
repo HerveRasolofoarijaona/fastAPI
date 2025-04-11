@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends,Request
 from sqlalchemy.orm import Session
 from . import models, schemas, database
 from datetime import datetime
@@ -37,7 +37,7 @@ def read_root():
 @app.put("/notifications/", response_model=schemas.NotificationResponse)
 def receive_notification(input: schemas.NotificationInput, db: Session = Depends(get_db)):
     print("✅ Notification reçue :", input.dict())
-    
+
     notif = models.Notification(
         serverCorrelationId=input.serverCorrelationId,
         status=input.status,
@@ -55,3 +55,9 @@ def get_notification(serverCorrelationId: str, db: Session = Depends(get_db)):
     if not notif:
         raise HTTPException(status_code=404, detail="Not found")
     return {"serverCorrelationId": notif.serverCorrelationId, "received_at": notif.received_at.isoformat()}
+
+@app.put("/debug")
+async def debug_put(request: Request):
+    data = await request.json()
+    print("📥 PUT reçu :", data)
+    return {"received": data}
