@@ -36,6 +36,8 @@ def read_root():
 
 @app.put("/notifications/", response_model=schemas.NotificationResponse)
 def receive_notification(input: schemas.NotificationInput, db: Session = Depends(get_db)):
+    print("✅ Notification reçue :", input.dict())
+    
     notif = models.Notification(
         serverCorrelationId=input.serverCorrelationId,
         status=input.status,
