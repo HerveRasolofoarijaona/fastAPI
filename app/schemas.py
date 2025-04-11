@@ -12,3 +12,14 @@ class ItemOut(ItemBase):
 
     class Config:
         orm_mode = True
+
+
+class NotificationInput(BaseModel):
+    status: str
+    serverCorrelationId: str
+    notificationMethod: str
+    objectReference: str
+
+class NotificationResponse(BaseModel):
+    serverCorrelationId: str
+    received_at: str

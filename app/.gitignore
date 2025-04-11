@@ -1,0 +1,22 @@
+# Ignore le fichier de configuration d'environnement
+.env
+
+# Ignore le fichier SQLite de base de données
+app.db
+
+# Ignore les fichiers compilés Python
+__pycache__/
+app/__pycache__/
+
+# Dossiers cachés de virtualenv (optionnel mais recommandé)
+venv/
+*.pyc
+*.pyo
+*.pyd
+
+# Fichiers de log (si tu en ajoutes plus tard)
+*.log
+
+# VSCode et autres IDE
+.vscode/
+.idea/

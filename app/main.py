@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException, Depends
 from sqlalchemy.orm import Session
 from . import models, schemas, database
+from datetime import datetime
+
 
 app = FastAPI()
 
@@ -27,3 +29,27 @@ def update_item(item_id: int, item: schemas.ItemCreate, db: Session = Depends(ge
     db.commit()
     db.refresh(db_item)
     return db_item
+
+@app.get("/")
+def read_root():
+    return {"message": "FastAPI fonctionne ! 🚀"}
+
+@app.put("/notifications/", response_model=schemas.NotificationResponse)
+def receive_notification(input: schemas.NotificationInput, db: Session = Depends(get_db)):
+    notif = models.Notification(
+        serverCorrelationId=input.serverCorrelationId,
+        status=input.status,
+        notificationMethod=input.notificationMethod,
+        objectReference=input.objectReference,
+        received_at=datetime.utcnow()
+    )
+    db.merge(notif)
+    db.commit()
+    return {"serverCorrelationId": input.serverCorrelationId, "received_at": notif.received_at.isoformat()}
+
+@app.get("/notifications/{serverCorrelationId}", response_model=schemas.NotificationResponse)
+def get_notification(serverCorrelationId: str, db: Session = Depends(get_db)):
+    notif = db.query(models.Notification).filter_by(serverCorrelationId=serverCorrelationId).first()
+    if not notif:
+        raise HTTPException(status_code=404, detail="Not found")
+    return {"serverCorrelationId": notif.serverCorrelationId, "received_at": notif.received_at.isoformat()}
